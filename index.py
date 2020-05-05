@@ -2,23 +2,16 @@ import os
 import sys
 from tqdm import tqdm
 import subprocess
+import argparse
 
-flag=True
+def initArgs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i" , "--input" , help="Input File")
+    return vars(parser.parse_args())
 
-while(flag == True):
-    f = input("Any files to upload? (y/n) ")
-    f = f.lower()
-    if f == "y" or f=="yes":
-        filePath = input("Enter file path: ")
-        #works
-        if os.path.isfile(filePath):
-            #works
-            fileName = list(filePath.split("/"))[-1]
-            subprocess.run("mkdir output" , shell=True)
-            subprocess.run("cp {} output".format(filePath))
-            
-        else:
-            print("[INFO] File does not exist\n")
+def splitFile(fileName , size=90):
+    subprocess.run(["split" , "-b" , "{}m".format(size) , fileName])
+    subprocess.run(["git" , "add" , "x*"])
 
-    else:
-        flag = False
+args = initArgs()
+splitFile(args["input"])
